@@ -1,0 +1,345 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════════ palette ══
+   The only place hex literals live. Everything downstream reads a token.
+   The scheme swap happens here, so every @theme inline utility follows it.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+
+  /* surfaces */
+  --paper: #fbf9f5; /* page ground — warm off-white, uncoated stock */
+  --paper-raised: #ffffff; /* cards, inputs */
+  --paper-sunken: #f2eee6; /* image wells, inset panels */
+
+  /* text */
+  --ink: #1a1714; /* headings, primary button ground */
+  --ink-muted: #5b534a; /* body copy */
+  --ink-faint: #756b61; /* meta, placeholders — still 4.95:1 */
+  --ink-inverse: #fbf9f5; /* text on --ink / --clay grounds */
+
+  /* lines */
+  --rule: #e3ddd2; /* decorative dividers only — 1.29:1 */
+  --rule-strong: #cfc6b8; /* hover state of a rule */
+  --field-border: #8f8578; /* input borders — 3.45:1, meets WCAG 1.4.11 */
+
+  /* accent — clay / terracotta */
+  --clay: #9c4221;
+  --clay-strong: #7b3319;
+  --clay-soft: #f6e8df;
+
+  /* status */
+  --danger: #a32b22;
+  --danger-soft: #fceae8;
+  --success: #2f6f4f;
+  --success-soft: #e6f2ea;
+  --warn: #7a5300;
+  --warn-soft: #fbf0d9;
+
+  --shadow-rgb: 26 23 20;
+}
+
+/* This block previously set a *light* theme (#f9f3f3 / #030303), so dark-mode
+   users got a pink-white page. It is a real dark ramp now. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --paper: #14110e;
+    --paper-raised: #1d1915;
+    --paper-sunken: #262019;
+
+    --ink: #f3eee5;
+    --ink-muted: #bab0a1;
+    --ink-faint: #968b7c;
+    --ink-inverse: #14110e;
+
+    --rule: #3c352c;
+    --rule-strong: #4f4539;
+    --field-border: #776a5a;
+
+    --clay: #e29063;
+    --clay-strong: #f0a87f;
+    --clay-soft: #2e211a;
+
+    --danger: #f09287;
+    --danger-soft: #2d1a17;
+    --success: #86c7a0;
+    --success-soft: #16261d;
+    --warn: #e0b473;
+    --warn-soft: #2a2013;
+
+    --shadow-rgb: 0 0 0;
+  }
+}
+
+/* ═══════════════════════════════════════════ scheme-reactive namespace ══
+   `inline` matters: utilities compile to `var(--paper)` rather than to a
+   frozen copy, so the dark block above actually swaps them.
+
+   Because of that, hand-written CSS below must use the :root names
+   (--ink, --paper, …) and NOT --color-ink: @theme inline does not emit the
+   --color-* custom properties. Utilities like bg-paper work normally.
+   ═══════════════════════════════════════════════════════════════════════ */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-sunken: var(--paper-sunken);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-ink-inverse: var(--ink-inverse);
+
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-field: var(--field-border);
+
+  --color-clay: var(--clay);
+  --color-clay-strong: var(--clay-strong);
+  --color-clay-soft: var(--clay-soft);
+
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+
+  /* Aliases so anything still using bg-background keeps working. */
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
+
+  --shadow-card:
+    0 1px 2px rgb(var(--shadow-rgb) / 0.04),
+    0 8px 24px -12px rgb(var(--shadow-rgb) / 0.1);
+  --shadow-lift:
+    0 2px 4px rgb(var(--shadow-rgb) / 0.05),
+    0 18px 40px -16px rgb(var(--shadow-rgb) / 0.16);
+}
+
+/* ═══════════════════════════════════════════════════ static scale tokens ══
+   ~1.22 modular scale. None of these names collide with Tailwind's built-in
+   text-sm…text-9xl, so both vocabularies coexist during the migration.
+   ═══════════════════════════════════════════════════════════════════════ */
+@theme {
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--letter-spacing: 0.08em;
+  --text-meta--font-weight: 500;
+
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.45;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.55;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+
+  --text-title: 1.375rem;
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.01em;
+
+  --text-heading: 1.75rem;
+  --text-heading--line-height: 1.2;
+  --text-heading--letter-spacing: -0.015em;
+
+  --text-display-sm: 2.25rem;
+  --text-display-sm--line-height: 1.08;
+  --text-display-sm--letter-spacing: -0.02em;
+
+  --text-display: 3rem;
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.025em;
+
+  --text-display-lg: clamp(2.75rem, 6vw, 4.5rem);
+  --text-display-lg--line-height: 0.98;
+  --text-display-lg--letter-spacing: -0.03em;
+
+  --radius-field: 0.375rem;
+  --radius-card: 0.75rem;
+
+  --ease-editorial: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@layer base {
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    /* NOTE: the `font-family: Arial, Helvetica, sans-serif` that used to live
+       here is deliberately gone. Tailwind preflight already sets html's
+       font-family from --font-sans (= Geist); this rule was overriding it,
+       so the whole site rendered in Arial. */
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+    font-optical-sizing: auto; /* Fraunces' opsz axis, driven by font-size */
+    font-weight: 500;
+  }
+
+  ::selection {
+    background-color: var(--clay-soft);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--clay);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Full-bleed support. `clip`, not `hidden`: it does not create a scroll
+     container, so `position: sticky` descendants and the fixed filter dock
+     keep working, and it is the one overflow value that legally pairs with
+     `overflow-y: visible`. `scrollbar-gutter` stops 100vw overflowing. */
+  html {
+    scrollbar-gutter: stable;
+    scroll-padding-top: 5rem; /* keeps a focused card clear of the sticky header */
+  }
+
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  /* Global motion kill-switch. framer-motion's <MotionConfig reducedMotion>
+     covers motion.* components; this covers plain CSS transitions. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════ horizontal lanes ══
+   Registered so framer-motion can publish real <length> values into them and
+   so they inherit down to the server-rendered card internals. This is what
+   lets ProductCard stay a server component while still being parallaxed.
+   ═══════════════════════════════════════════════════════════════════════ */
+@property --lane-media-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --lane-word-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --lane-spec-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@layer components {
+  /* main is a centred max-w-5xl column; this escapes it exactly:
+     content-left + (W/2 - vw/2) === 0. */
+  .full-bleed {
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+  }
+
+  .lane {
+    position: relative; /* REQUIRED by useScroll({ container }) */
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    overflow-y: visible;
+    overscroll-behavior-x: contain; /* no swipe-back, no scroll chaining */
+    /* `proximity`, not `mandatory`: mandatory snap re-snaps after Playwright's
+       scrollIntoViewIfNeeded and trips its positional-stability check. */
+    scroll-snap-type: x proximity;
+    /* Align the first card with the lane heading above it. The heading sits in
+       a `mx-auto max-w-5xl px-4` row inside this same 100vw section, so its
+       gutter is exactly (100vw - 64rem) / 2 + 1rem. Matching it here is what
+       stops the cards and their spec captions running off the left edge. */
+    --lane-pad: calc(max((100vw - 64rem) / 2, 0px) + 1rem);
+    scroll-padding-inline: var(--lane-pad);
+    padding-inline: var(--lane-pad);
+    scrollbar-width: none;
+  }
+
+  .lane::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lane > * {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  /* Mobile is a real snap feed. Untested by the suite (Desktop Chrome only),
+     so `mandatory` is safe here. */
+  @media (max-width: 767px) {
+    .lane {
+      scroll-snap-type: x mandatory;
+      --lane-pad: 1rem;
+    }
+  }
+
+  /* Oversized decorative type. It is meant to bleed past the viewport, but it
+     has to be clipped deliberately rather than pushing the document wide. */
+  .lane-wordmark {
+    white-space: nowrap;
+    /* Same gutter as the lane, so the word starts on the heading's left edge
+       and bleeds off to the right rather than floating unanchored. */
+    --lane-pad: calc(max((100vw - 64rem) / 2, 0px) + 1rem);
+  }
+
+  /* Parallax consumers. These elements are server-rendered and carry no JS —
+     they only read variables a client wrapper publishes above them. */
+  .lane-media-inner {
+    position: absolute;
+    inset: -10%; /* headroom so the translate never reveals an edge */
+    transform: translate3d(var(--lane-media-x), 0, 0);
+    will-change: transform;
+  }
+
+  .lane-wordmark {
+    transform: translate3d(var(--lane-word-x), 0, 0);
+    will-change: transform;
+  }
+
+  .lane-spec {
+    transform: translate3d(var(--lane-spec-x), 0, 0);
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lane {
+      scroll-snap-type: none;
+    }
+
+    .lane-media-inner,
+    .lane-wordmark,
+    .lane-spec {
+      transform: none;
+      will-change: auto;
+    }
+  }
+}
+
+/* Paper grain. Used over the auth canvas AND over its static poster so both
+   states share a surface quality. Reusable on store hero sections. */
+@utility texture-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+}

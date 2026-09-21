@@ -1,0 +1,1 @@
+ALTER TABLE `order` ADD `cart_id` text REFERENCES cart(id);
